@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<product productid="rcd_notepad" active="1">
+	<title>Notepad</title>
+	<description>Notepad for user control panel</description>
+	<version>0.1</version>
+	<url><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></url>
+	<versioncheckurl><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></versioncheckurl>
+	<apm_releasedate></apm_releasedate>
+	<apm_author></apm_author>
+	<apm_relatedurl></apm_relatedurl>
+	<apm_extrainfo></apm_extrainfo>
+	<apm_extraedit></apm_extraedit>
+	<dependencies>
+	</dependencies>
+	<codes>
+		<code version="0.1">
+			<installcode><![CDATA[$db->hide_errors();
+$db->query_write("
+    ALTER TABLE " . TABLE_PREFIX . "usertextfield
+    ADD rcd_notepad TEXT
+");
+//Migration from old notepad mod, if exists
+$db->query_write("
+    UPDATE TABLE " . TABLE_PREFIX . "usertextfield
+    SET rcd_notepad = notepad
+");
+$db->show_errors();]]></installcode>
+			<uninstallcode><![CDATA[$db->query_write("
+    ALTER TABLE " . TABLE_PREFIX . "usertextfield
+    DROP rcd_notepad
+");]]></uninstallcode>
+		</code>
+	</codes>
+	<templates>
+		<template name="rcd_notepad" templatetype="template" date="1281532845" username="ruseinov" version="0.1"><![CDATA[<form name="rcd_notepad_form" id="rcd_notepad_form" method="post" action="usercp.php{vb:raw sessionurl_q}">
+    <div class="collapse">
+        <h2 class="blockhead">{vb:rawphrase rcd_notepad}
+            <a class="collapse"  id="collapse_rcd_notepad_div" href="#top"><img src="/images/buttons/collapse_40b.png" alt="" title="Свернуть" /></a>
+        </h2>
+    </div>
+    <div id="rcd_notepad_div">
+        <div class="blockbody formcontrols">
+            <div class="section">
+                <div  class="blockrow">
+                    <textarea style="width:100%"  name="rcd_notepad"  id="rcd_notepad"  rows="10" cols="80" dir="ltr" class="forum" tabindex="1"><vb:if condition="$vbulletin->userinfo['rcd_notepad']">{vb:raw rcd_notepad}<vb:else />{vb:rawphrase rcd_notepad_description}</vb:if></textarea>
+                    <input type="hidden" name="do" value="rcd_notepad_save" />
+                    <input type="hidden" name="securitytoken" value="{vb:raw securitytoken}" />
+                </div>
+            </div>
+        </div>
+        <div class="blockfoot controlbar textpad">
+            <input type="submit" class="button" style="min-width:100px" name="sbutton" id="rcd_notepad_submit"  value="{vb:rawphrase rcd_notepad_btn_save}" tabindex="1"   />
+        </div>
+    </div>
+</form>
+
+<br />]]></template>
+		<template name="rcd_notepad_css" templatetype="template" date="1281529820" username="ruseinov" version="0.1"><![CDATA[<style type="text/css">
+input#rcd_notepad_submit[type="submit"][disabled]:active, input#rcd_notepad_submit[type="submit"][disabled] {
+ color:graytext;
+}
+#collapse_rcd_notepad_div {
+ top: 6px;
+}
+</style>
+]]></template>
+		<template name="rcd_notepad_init_js" templatetype="template" date="1281544909" username="ruseinov" version="0.1"><![CDATA[<script type="text/javascript">
+    //Init button states text
+    var BUTTON_SAVING = "{vb:rawphrase rcd_notepad_btn_autosave}";
+    var BUTTON_SAVE = "{vb:rawphrase rcd_notepad_btn_save}";
+    var BUTTON_SAVED = "{vb:rawphrase rcd_notepad_btn_saved}";
+    var RCD_NOTEPAD_LENGTH = {vb:raw rcd_notepad_length};
+    var RCD_DEFAULT_TEXT = "{vb:rawphrase rcd_notepad_description}";
+    // initialize vote buttons and votes result table
+    AJAX_RCD_Notepad_Init();
+</script>]]></template>
+		<template name="rcd_notepad_js" templatetype="template" date="1281618764" username="ruseinov" version="0.1"><![CDATA[<script type="text/javascript">
+
+var rcd_notepad_timeout = '';
+var rcd_notepad_text = '';
+var RCD_NOTEPAD_BUTTON_ID = "rcd_notepad_submit";
+var RCD_NOTEPAD_TEXTAREA_ID = "rcd_notepad";
+var RCD_NOTEPAD_FORM_ID = "rcd_notepad_form";
+var RCD_NOTEPAD_TIMEOUT_MS = 3000;
+
+function AJAX_RCD_Notepad_Init()
+{
+    if (AJAX_Compatible)
+    {
+        if(typeof RCD_NOTEPAD_BUTTON_ID == "string")
+        {
+            submit_button = YAHOO.util.Dom.get(RCD_NOTEPAD_BUTTON_ID);
+
+            if(submit_button)
+            {
+                submit_button.onclick = AJAX_RCD_Notepad.prototype.send_click;
+                AJAX_RCD_Notepad.prototype.change_button(BUTTON_SAVED);
+            }
+        }
+    
+        if(typeof RCD_NOTEPAD_TEXTAREA_ID == "string")
+        {          
+            textarea = YAHOO.util.Dom.get(RCD_NOTEPAD_TEXTAREA_ID);
+            textarea.onkeyup = AJAX_RCD_Notepad.prototype.autosave; 
+            textarea.onfocus = AJAX_RCD_Notepad.prototype.deleteDefaultText;
+            textarea.onblur = AJAX_RCD_Notepad.prototype.restoreDefaultText;
+            textarea.onclick = AJAX_RCD_Notepad.prototype.saveNotepadText;
+        }
+    }
+}
+
+AJAX_RCD_Notepad.prototype.saveNotepadText = function()
+{
+    var notepad_text = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+    rcd_notepad_text = notepad_text.value;
+}
+
+AJAX_RCD_Notepad.prototype.getNotepadText = function()
+{
+    var notepad_text = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+    return notepad_text.value;
+}
+
+AJAX_RCD_Notepad.prototype.deleteDefaultText = function()
+{
+    object = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+    if(object.value == RCD_DEFAULT_TEXT)
+    {
+        object.value = "";
+    } 
+}
+
+AJAX_RCD_Notepad.prototype.restoreDefaultText = function()
+{
+    object = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+    if(object.value == "")
+    {
+        object.value = RCD_DEFAULT_TEXT;
+    } 
+}
+
+AJAX_RCD_Notepad.prototype.limitNotepadLength = function() 
+{
+    limitField = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+    if (limitField.value.length > RCD_NOTEPAD_LENGTH) 
+    {
+        limitField.value = limitField.value.substring(0, RCD_NOTEPAD_LENGTH);
+    }
+}
+
+/**
+* Class to handle notepad data
+*
+* @param    object  The form object containing notepad data
+*/
+function AJAX_RCD_Notepad()
+{
+    this.formobj = YAHOO.util.Dom.get(RCD_NOTEPAD_FORM_ID);
+    this.url = "ajax.php?";
+    // vB_Hidden_Form object to handle form variables
+    this.pseudoform = new vB_Hidden_Form('ajax.php');
+    this.pseudoform.add_variable('ajax', 1);
+    this.pseudoform.add_variable('s', fetch_sessionhash());
+    this.pseudoform.add_variables_from_object(this.formobj);
+    // Output object
+    this.output_element_id = 'rcd_notepad';
+}
+
+AJAX_RCD_Notepad.prototype.send_click = function()
+{
+    if(rcd_notepad_timeout)
+    {
+        clearTimeout(rcd_notepad_timeout);
+    }
+    var notepad = new AJAX_RCD_Notepad();
+    notepad.send_request();
+    return false;
+}
+
+AJAX_RCD_Notepad.prototype.autosave = function()
+{
+    if(AJAX_RCD_Notepad.prototype.getNotepadText() != rcd_notepad_text)
+    {
+        if(rcd_notepad_timeout)
+        {
+            clearTimeout(rcd_notepad_timeout);
+	}
+        AJAX_RCD_Notepad.prototype.change_button(BUTTON_SAVE);
+        rcd_notepad_timeout = setTimeout(AJAX_RCD_Notepad.prototype.send_click, RCD_NOTEPAD_TIMEOUT_MS);
+    AJAX_RCD_Notepad.prototype.limitNotepadLength(); 
+    }
+}
+
+AJAX_RCD_Notepad.prototype.send_request = function()
+{
+    AJAX_RCD_Notepad.prototype.change_button(this.btn_obj, BUTTON_SAVING);
+    YAHOO.util.Connect.asyncRequest("POST", this.url, {
+        success: this.handle_ajax_response,
+        failure: this.change_button(this.btn_obj, BUTTON_SAVE),
+        timeout: vB_Default_Timeout,
+        scope: this
+    }, this.pseudoform.build_query_string());
+    this.change_button(BUTTON_SAVING);
+    return false;
+}
+
+AJAX_RCD_Notepad.prototype.handle_ajax_response = function(ajax)
+{
+    if (ajax.responseXML)
+    {
+        var notepad_text = document.getElementById(RCD_NOTEPAD_TEXTAREA_ID);
+        // check for error first
+        var error = ajax.responseXML.getElementsByTagName('error');
+        if (error.length)
+        {
+            alert(error[0].firstChild.nodeValue)
+            this.change_button(BUTTON_SAVE);
+        }
+        else
+        {
+            this.saveNotepadText();
+            this.change_button(BUTTON_SAVED);
+        } 
+    }
+}
+
+/**
+ *  Sets value of the submit button and enables/disables it according to a value
+ * 	@param btn_text string receives 3 constants BUTTON_SAVED, BUTTON_SAVE, BUTTON_SAVING
+ * 
+ */
+AJAX_RCD_Notepad.prototype.change_button = function(btn_text)
+{
+    var btn = document.getElementById(RCD_NOTEPAD_BUTTON_ID);
+    if (BUTTON_SAVE == btn_text)
+    {
+        btn.removeAttribute('disabled');
+    }   
+    else
+    {
+        btn.setAttribute('disabled', 'disabled');
+    }
+    btn.value = btn_text; 
+}
+</script>]]></template>
+	</templates>
+	<stylevardfns>
+	</stylevardfns>
+	<stylevars>
+	</stylevars>
+	<plugins>
+		<plugin active="1" executionorder="5">
+			<title>Save Notepad (AJAX mode)</title>
+			<hookname>ajax_complete</hookname>
+			<phpcode><![CDATA[if ($_REQUEST['do'] == 'rcd_notepad_save')
+{
+    $vbulletin->input->clean_gpc('p', 
+        'rcd_notepad', TYPE_NOHTML
+        );
+        
+    $xml = new vB_AJAX_XML_Builder($vbulletin, 'text/xml');
+        
+    $vbulletin->GPC['rcd_notepad'] = substr($vbulletin->GPC['rcd_notepad'], 0, RCD_NOTEPAD_LENGTH);
+    $userdata =& datamanager_init('User', $vbulletin, ERRTYPE_STANDARD);
+    $userdata->set_existing($vbulletin->userinfo);
+    $userdata->setr('rcd_notepad', convert_urlencoded_unicode($vbulletin->GPC['rcd_notepad']));
+    $userdata->save();
+      
+    $xml->add_tag('ok', 1);
+    $xml->print_xml();
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Cache templates</title>
+			<hookname>cache_templates</hookname>
+			<phpcode><![CDATA[if (THIS_SCRIPT == 'usercp')
+{
+    $cache[] = 'rcd_notepad';
+    $cache[] = 'rcd_notepad_js';
+    $cache[] = 'rcd_notepad_init_js';
+    $cache[] = 'rcd_notepad_css';
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Define Notepad Max Text Size</title>
+			<hookname>global_bootstrap_init_start</hookname>
+			<phpcode><![CDATA[define('RCD_NOTEPAD_LENGTH', 50000);]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Add templates.</title>
+			<hookname>parse_templates</hookname>
+			<phpcode><![CDATA[if ('usercp' == THIS_SCRIPT)
+{
+    $rcd_notepad_templater = vB_Template::create('rcd_notepad_js');
+    $template_hook['headinclude_javascript'] .= $rcd_notepad_templater->render();
+   
+    $rcd_notepad_templater = vB_Template::create('rcd_notepad_init_js');
+    $rcd_notepad_templater->register('rcd_notepad_length', RCD_NOTEPAD_LENGTH);
+    $template_hook['footer_javascript'] .= $rcd_notepad_templater->render();
+    
+    $rcd_notepad_templater = vB_Template::create('rcd_notepad_css');
+    $template_hook['headinclude_bottom_css'] .= $rcd_notepad_templater->render();
+   
+    $rcd_notepad_templater = vB_Template::create('rcd_notepad');
+    $rcd_notepad_templater->register('sessionurl_q', $session['sessionurl_q']);
+    $rcd_notepad_templater->register('rcd_notepad', $vbulletin->userinfo['rcd_notepad']);
+    $rcd_notepad_templater->register('securitytoken', $vbulletin->userinfo['securitytoken']);
+    $template_hook['usercp_main_pos1'] .= $rcd_notepad_templater->render();
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Save Notepad (NO JS mode)</title>
+			<hookname>usercp_complete</hookname>
+			<phpcode><![CDATA[if ($_REQUEST['do'] == 'rcd_notepad_save')
+{
+    $vbulletin->input->clean_gpc('p', 'rcd_notepad', TYPE_NOHTML);
+        
+    if (strlen($vbulletin->GPC['rcd_notepad']) > RCD_NOTEPAD_LENGTH)
+    {
+        standard_error(fetch_error('rcd_notepad_too_long'));
+    }
+    else
+    {
+        $userdata =& datamanager_init('User', $vbulletin, ERRTYPE_STANDARD);
+        $userdata->set_existing($vbulletin->userinfo);
+        $userdata->setr('rcd_notepad', $vbulletin->GPC['rcd_notepad']);
+        $userdata->save();
+    
+        $vbulletin->url = 'usercp.php' . $vbulletin->session->vars['sessionurl_q'];
+        eval(print_standard_redirect('rcd_notepad_saved', true, true));
+    }
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Data Manager: Map new field to DB</title>
+			<hookname>userdata_doset</hookname>
+			<phpcode><![CDATA[if ($fieldname == 'rcd_notepad')
+{
+   $tables = array('usertextfield');
+}]]></phpcode>
+		</plugin>
+		<plugin active="1" executionorder="5">
+			<title>Data Manager: Register notepad field</title>
+			<hookname>userdata_start</hookname>
+			<phpcode><![CDATA[$this->validfields['rcd_notepad'] = array(TYPE_STR, REQ_NO);]]></phpcode>
+		</plugin>
+	</plugins>
+	<phrases>
+		<phrasetype name="Error Messages" fieldname="error">
+			<phrase name="rcd_notepad_too_long" date="1281369660" username="Vitaly" version=""><![CDATA[Text is too large.]]></phrase>
+		</phrasetype>
+		<phrasetype name="Front-End Redirect Messages" fieldname="frontredirect">
+			<phrase name="rcd_notepad_saved" date="1280832960" username="ruseinov" version=""><![CDATA[Your notepad has been saved.]]></phrase>
+		</phrasetype>
+		<phrasetype name="User Tools (global)" fieldname="user">
+			<phrase name="rcd_notepad" date="1280832322" username="ruseinov" version=""><![CDATA[Notepad]]></phrase>
+			<phrase name="rcd_notepad_btn_autosave" date="1281345810" username="ruseinov" version=""><![CDATA[Saving...]]></phrase>
+			<phrase name="rcd_notepad_btn_save" date="1281105115" username="ruseinov" version=""><![CDATA[Save]]></phrase>
+			<phrase name="rcd_notepad_btn_saved" date="1281105083" username="ruseinov" version=""><![CDATA[Saved]]></phrase>
+			<phrase name="rcd_notepad_description" date="1281369560" username="ruseinov" version=""><![CDATA[Here you can store your notes.]]></phrase>
+		</phrasetype>
+	</phrases>
+	<options>
+	</options>
+	<helptopics>
+	</helptopics>
+	<cronentries>
+	</cronentries>
+	<faqentries>
+	</faqentries>
+	<templateedits>
+	</templateedits>
+</product>
