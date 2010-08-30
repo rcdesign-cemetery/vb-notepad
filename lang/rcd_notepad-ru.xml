@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
-<language name="Russian (RU)" vbversion="4.0.4" product="personal_notepad" type="custom">
+<language name="Russian (RU)" vbversion="4.0.4" product="rcd_notepad" type="custom">
 	<settings>
 		<options><![CDATA[1]]></options>
 		<languagecode><![CDATA[ru]]></languagecode>
@@ -17,15 +17,16 @@
 		<thousandsep><![CDATA[,]]></thousandsep>
 	</settings>
 	<phrasetype name="Error Messages" fieldname="error">
-		<phrase name="personal_notepad_input_too_long" date="1231432803" username="Vitaly"><![CDATA[Размер текста превышает установленные лимиты.]]></phrase>
+		<phrase name="rcd_notepad_too_long" date="1280832722" username="ruseinov"><![CDATA[Размер текста превышает установленные лимиты.]]></phrase>
 	</phrasetype>
 	<phrasetype name="Front-End Redirect Messages" fieldname="frontredirect">
-		<phrase name="notepad_saved" date="1231432773" username="Vitaly"><![CDATA[Блокнот сохранен.]]></phrase>
+		<phrase name="rcd_notepad_saved" date="1280832960" username="ruseinov"><![CDATA[Блокнот сохранен.]]></phrase>
 	</phrasetype>
 	<phrasetype name="User Tools (global)" fieldname="user">
-		<phrase name="personal_notepad" date="1231432587" username="Vitaly"><![CDATA[Блокнот]]></phrase>
-		<phrase name="personal_notepad_explanation" date="1280832471" username="ruseinov"><![CDATA[Здесь можно хранить любые заметки.]]></phrase>
-		<phrase name="save_notepad" date="1231432677" username="Vitaly"><![CDATA[Сохранить]]></phrase>
-		<phrase name="you_have_used_x_y_characters" date="1231432748" username="Vitaly"><![CDATA[Использовано <span id="notepad_charcounter">{1}</span> из {2} символов.]]></phrase>
+		<phrase name="rcd_notepad" date="1280832322" username="ruseinov"><![CDATA[Блокнот]]></phrase>
+		<phrase name="rcd_notepad_btn_autosave" date="1281345810" username="ruseinov"><![CDATA[Сохранение...]]></phrase>
+		<phrase name="rcd_notepad_btn_save" date="1281105115" username="ruseinov"><![CDATA[Сохранить]]></phrase>
+		<phrase name="rcd_notepad_btn_saved" date="1281105083" username="ruseinov"><![CDATA[Сохранён]]></phrase>
+		<phrase name="rcd_notepad_description" date="1280832467" username="ruseinov"><![CDATA[Здесь можно хранить любые заметки.]]></phrase>
 	</phrasetype>
 </language>

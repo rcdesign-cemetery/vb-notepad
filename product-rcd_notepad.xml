@@ -6,11 +6,11 @@
 	<version>0.1</version>
 	<url><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></url>
 	<versioncheckurl><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></versioncheckurl>
-	<apm_releasedate></apm_releasedate>
-	<apm_author></apm_author>
-	<apm_relatedurl></apm_relatedurl>
-	<apm_extrainfo></apm_extrainfo>
-	<apm_extraedit></apm_extraedit>
+	<apm_releasedate>0</apm_releasedate>
+	<apm_author />
+	<apm_relatedurl />
+	<apm_extrainfo />
+	<apm_extraedit />
 	<dependencies>
 	</dependencies>
 	<codes>
@@ -22,7 +22,7 @@ $db->query_write("
 ");
 //Migration from old notepad mod, if exists
 $db->query_write("
-    UPDATE TABLE " . TABLE_PREFIX . "usertextfield
+    UPDATE " . TABLE_PREFIX . "usertextfield
     SET rcd_notepad = notepad
 ");
 $db->show_errors();]]></installcode>
