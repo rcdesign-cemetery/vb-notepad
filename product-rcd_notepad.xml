@@ -285,7 +285,7 @@ AJAX_RCD_Notepad.prototype.change_button = function(btn_text)
 		<plugin active="1" executionorder="5">
 			<title>Cache templates</title>
 			<hookname>cache_templates</hookname>
-			<phpcode><![CDATA[if (THIS_SCRIPT == 'usercp')
+			<phpcode><![CDATA[if (THIS_SCRIPT == 'usercp' AND $show['member'])
 {
     $cache[] = 'rcd_notepad';
     $cache[] = 'rcd_notepad_js';
@@ -301,7 +301,7 @@ AJAX_RCD_Notepad.prototype.change_button = function(btn_text)
 		<plugin active="1" executionorder="5">
 			<title>Add templates.</title>
 			<hookname>parse_templates</hookname>
-			<phpcode><![CDATA[if ('usercp' == THIS_SCRIPT)
+			<phpcode><![CDATA[if ('usercp' == THIS_SCRIPT AND $show['member'])
 {
     $rcd_notepad_templater = vB_Template::create('rcd_notepad_js');
     $template_hook['headinclude_javascript'] .= $rcd_notepad_templater->render();
