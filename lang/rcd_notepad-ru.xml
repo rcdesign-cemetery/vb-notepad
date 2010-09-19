@@ -28,5 +28,6 @@
 		<phrase name="rcd_notepad_btn_save" date="1281105115" username="ruseinov"><![CDATA[Сохранить]]></phrase>
 		<phrase name="rcd_notepad_btn_saved" date="1281105083" username="ruseinov"><![CDATA[Сохранён]]></phrase>
 		<phrase name="rcd_notepad_description" date="1280832467" username="ruseinov"><![CDATA[Здесь можно хранить любые заметки.]]></phrase>
+		<phrase name="collapse_notepad" date="1284872282" username="jpatuk"><![CDATA[Свернуть блокнот]]></phrase>
 	</phrasetype>
 </language>

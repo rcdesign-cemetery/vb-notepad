@@ -3,7 +3,7 @@
 <product productid="rcd_notepad" active="1">
 	<title>Notepad</title>
 	<description>Notepad for user control panel</description>
-	<version>0.1</version>
+	<version>0.2</version>
 	<url><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></url>
 	<versioncheckurl><![CDATA[http://www.vbulletin.org/forum/misc.php?do=producthelp&pid=rcd_notepad]]></versioncheckurl>
 	<apm_releasedate>0</apm_releasedate>
@@ -33,35 +33,46 @@ $db->show_errors();]]></installcode>
 		</code>
 	</codes>
 	<templates>
-		<template name="rcd_notepad" templatetype="template" date="1281532845" username="ruseinov" version="0.1"><![CDATA[<form name="rcd_notepad_form" id="rcd_notepad_form" method="post" action="usercp.php{vb:raw sessionurl_q}">
+		<template name="rcd_notepad" templatetype="template" date="1284872222" username="jpatuk" version="0.2"><![CDATA[<div class="notepad_container block">
+<form name="rcd_notepad_form" id="rcd_notepad_form" method="post" action="usercp.php{vb:raw sessionurl_q}">
     <div class="collapse">
         <h2 class="blockhead">{vb:rawphrase rcd_notepad}
-            <a class="collapse"  id="collapse_rcd_notepad_div" href="#top"><img src="/images/buttons/collapse_40b.png" alt="" title="Свернуть" /></a>
+            <a class="collapse"  id="collapse_rcd_notepad_div" href="#top"><img src="{vb:stylevar imgdir_button}/collapse_40b.png" alt="{vb:rawphrase collapse_notepad}" /></a>
         </h2>
     </div>
     <div id="rcd_notepad_div">
         <div class="blockbody formcontrols">
             <div class="section">
                 <div  class="blockrow">
-                    <textarea style="width:100%"  name="rcd_notepad"  id="rcd_notepad"  rows="10" cols="80" dir="ltr" class="forum" tabindex="1"><vb:if condition="$vbulletin->userinfo['rcd_notepad']">{vb:raw rcd_notepad}<vb:else />{vb:rawphrase rcd_notepad_description}</vb:if></textarea>
+                    <textarea class="rcd_notepad"  name="rcd_notepad"  id="rcd_notepad"  rows="10" cols="80" dir="ltr" class="forum" tabindex="1"><vb:if condition="$vbulletin->userinfo['rcd_notepad']">{vb:raw rcd_notepad}<vb:else />{vb:rawphrase rcd_notepad_description}</vb:if></textarea>
                     <input type="hidden" name="do" value="rcd_notepad_save" />
                     <input type="hidden" name="securitytoken" value="{vb:raw securitytoken}" />
                 </div>
             </div>
         </div>
         <div class="blockfoot controlbar textpad">
-            <input type="submit" class="button" style="min-width:100px" name="sbutton" id="rcd_notepad_submit"  value="{vb:rawphrase rcd_notepad_btn_save}" tabindex="1"   />
+            <input type="submit" class="button" name="sbutton" id="rcd_notepad_submit"  value="{vb:rawphrase rcd_notepad_btn_save}" tabindex="1"   />
         </div>
     </div>
 </form>
-
-<br />]]></template>
-		<template name="rcd_notepad_css" templatetype="template" date="1281529820" username="ruseinov" version="0.1"><![CDATA[<style type="text/css">
+</div>]]></template>
+		<template name="rcd_notepad_css" templatetype="template" date="1284869387" username="jpatuk" version="0.2"><![CDATA[<style type="text/css">
 input#rcd_notepad_submit[type="submit"][disabled]:active, input#rcd_notepad_submit[type="submit"][disabled] {
  color:graytext;
 }
 #collapse_rcd_notepad_div {
  top: 6px;
+}
+.rcd_notepad {
+ width:100%;
+}
+.notepad_container {
+ width:100%;
+ height:auto;
+ margin:0 0 {vb:stylevar padding} 0;
+}
+.notepad_container .button{
+ text-align:center !important;
 }
 </style>
 ]]></template>
@@ -354,6 +365,7 @@ AJAX_RCD_Notepad.prototype.change_button = function(btn_text)
 			<phrase name="rcd_notepad_saved" date="1280832960" username="ruseinov" version=""><![CDATA[Your notepad has been saved.]]></phrase>
 		</phrasetype>
 		<phrasetype name="User Tools (global)" fieldname="user">
+			<phrase name="collapse_notepad" date="1284872282" username="jpatuk" version=""><![CDATA[Collapse notepad]]></phrase>
 			<phrase name="rcd_notepad" date="1280832322" username="ruseinov" version=""><![CDATA[Notepad]]></phrase>
 			<phrase name="rcd_notepad_btn_autosave" date="1281345810" username="ruseinov" version=""><![CDATA[Saving...]]></phrase>
 			<phrase name="rcd_notepad_btn_save" date="1281105115" username="ruseinov" version=""><![CDATA[Save]]></phrase>
